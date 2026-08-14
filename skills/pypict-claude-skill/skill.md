@@ -1,14 +1,14 @@
 ---
 name: pypict-claude-skill
 title: PyPICT Claude Skill
-description: 用 PICT（成对独立组合测试）为需求或代码设计全面的测试用例，自动生成覆盖成对组合的优化测试套件。
+description: 用 PICT 成对组合测试为需求或代码设计全面的测试用例。
 category: testing
 repoUrl: https://github.com/omkamal/pypict-claude-skill
 ---
 
 # PyPICT Claude Skill
 
-> 用 PICT（成对独立组合测试）为需求或代码设计全面的测试用例，自动生成覆盖成对组合的优化测试套件。
+> 用 PICT 成对组合测试为需求或代码设计全面的测试用例。
 
 ## 来源
 
@@ -20,7 +20,7 @@ repoUrl: https://github.com/omkamal/pypict-claude-skill
 
 ## 说明
 
-此技能的完整内容需要从官方仓库获取。运行以下命令下载完整技能：
+此技能的完整内容需要从官方仓库获取 运行以下命令下载完整技能：
 
 ```bash
 python scripts/download-skill.py pypict-claude-skill

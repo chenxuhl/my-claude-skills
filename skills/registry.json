@@ -1,0 +1,229 @@
+{
+  "version": "1.0.0",
+  "description": "单一数据源：本仓库所有技能的唯一事实来源。setup-skills.py / download-skill.py / validate-skills.py 均从此文件读取。",
+  "categories": {
+    "development": "开发实践：TDD、架构设计、Git 工作流、代码质量",
+    "frontend": "前端与可视化：Web 资产构建、数据可视化",
+    "integration": "服务集成：MCP、外部 API、云服务、数据获取",
+    "productivity": "效率工具：提示工程、技能创作、文档与自动化",
+    "testing": "测试与调试：浏览器自动化、模糊测试、用例设计"
+  },
+  "skills": [
+    {
+      "name": "artifacts-builder",
+      "title": "Artifacts Builder",
+      "description": "利用现代前端 Web 技术（React、Tailwind CSS、shadcn/ui）构建复杂多组件的 Claude.ai HTML 资产。",
+      "description_en": "Build complex multi-component Claude.ai HTML artifacts with modern web tech (React, Tailwind, shadcn/ui).",
+      "repo": "https://github.com/anthropics/skills",
+      "path": "skills/web-artifacts-builder",
+      "category": "frontend"
+    },
+    {
+      "name": "aws-skills",
+      "title": "AWS Skills",
+      "description": "结合 CDK 最佳实践的 AWS 开发，包含成本优化的 MCP 服务器和无服务器/事件驱动架构模式。",
+      "description_en": "AWS development with CDK best practices, cost-optimized MCP servers, and serverless/event-driven patterns.",
+      "repo": "https://github.com/zxkane/aws-skills",
+      "path": "skills",
+      "category": "integration"
+    },
+    {
+      "name": "changelog-generator",
+      "title": "Changelog Generator",
+      "description": "分析 Git 提交历史，自动将技术性提交转换为用户友好的发布说明。",
+      "description_en": "Turn technical Git commits into user-friendly release notes automatically.",
+      "repo": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "path": "changelog-generator",
+      "category": "productivity"
+    },
+    {
+      "name": "claude-code-terminal-title",
+      "title": "Claude Code Terminal Title",
+      "description": "给每个 Claude-Code 终端窗口动态设置标题，清晰展示当前任务。",
+      "description_en": "Set a dynamic title on each Claude-Code terminal window to show the current task.",
+      "repo": "https://github.com/bluzername/claude-code-terminal-title",
+      "path": "",
+      "category": "productivity"
+    },
+    {
+      "name": "d3js-visualization",
+      "title": "D3.js Visualization",
+      "description": "生成 D3 图表和交互式数据可视化。",
+      "description_en": "Generate D3 charts and interactive data visualizations.",
+      "repo": "https://github.com/chrisvoncsefalvay/claude-d3js-skill",
+      "path": "",
+      "category": "frontend"
+    },
+    {
+      "name": "ffuf-web-fuzzing",
+      "title": "FFUF Web Fuzzing",
+      "description": "集成 ffuf 网络模糊测试工具，执行模糊测试并分析漏洞结果。",
+      "description_en": "Integrate the ffuf web fuzzer to run fuzzing and analyze vulnerability results.",
+      "repo": "https://github.com/jthack/ffuf_claude_skill",
+      "path": "",
+      "category": "testing"
+    },
+    {
+      "name": "finishing-a-development-branch",
+      "title": "Finishing a Development Branch",
+      "description": "通过清晰的选项引导开发任务的收尾，并处理选定的工作流程。",
+      "description_en": "Guide the finishing of a development task with clear options and workflows.",
+      "repo": "https://github.com/obra/superpowers",
+      "path": "skills/finishing-a-development-branch",
+      "category": "development"
+    },
+    {
+      "name": "ios-simulator",
+      "title": "iOS Simulator",
+      "description": "与 iOS 模拟器交互，方便测试和调试 iOS 应用。",
+      "description_en": "Interact with the iOS Simulator to test and debug iOS apps.",
+      "repo": "https://github.com/conorluddy/ios-simulator-skill",
+      "path": "",
+      "category": "testing"
+    },
+    {
+      "name": "jules",
+      "title": "Jules AI Agent",
+      "description": "把编码任务交给 Google Jules AI 代理，异步处理 GitHub 仓库中的 bug 修复、文档编写、测试和功能实现。",
+      "description_en": "Delegate coding tasks to Google Jules AI agent for async bug fixes, docs, tests, and features.",
+      "repo": "https://github.com/sanjay3290/ai-skills",
+      "path": "skills/jules",
+      "category": "productivity"
+    },
+    {
+      "name": "langsmith-fetch",
+      "title": "LangSmith Fetch",
+      "description": "自动从 LangSmith Studio 获取并分析执行轨迹，调试 LangChain 和 LangGraph 代理。",
+      "description_en": "Fetch and analyze execution traces from LangSmith Studio to debug LangChain/LangGraph agents.",
+      "repo": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "path": "langsmith-fetch",
+      "category": "integration"
+    },
+    {
+      "name": "mcp-builder",
+      "title": "MCP Builder",
+      "description": "用 Python 或 TypeScript 创建高质量的 MCP（模型上下文协议）服务器，集成外部 API 和服务。",
+      "description_en": "Build high-quality MCP (Model Context Protocol) servers in Python or TypeScript.",
+      "repo": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "path": "mcp-builder",
+      "category": "integration"
+    },
+    {
+      "name": "move-code-quality-skill",
+      "title": "Move Code Quality",
+      "description": "根据官方《Move Book》2024 版代码质量检查清单，分析 Move 语言包是否符合规范和最佳实践。",
+      "description_en": "Check Move language packages against the official Move Book 2024 code quality checklist.",
+      "repo": "https://github.com/1NickPappas/move-code-quality-skill",
+      "path": "",
+      "category": "development"
+    },
+    {
+      "name": "playwright-browser-automation",
+      "title": "Playwright Browser Automation",
+      "description": "由模型调用的 Playwright 自动化工具，用于测试和验证 Web 应用程序。",
+      "description_en": "Model-invoked Playwright automation for testing and verifying web applications.",
+      "repo": "https://github.com/lackeyjb/playwright-skill",
+      "path": "",
+      "category": "testing"
+    },
+    {
+      "name": "prompt-engineering",
+      "title": "Prompt Engineering",
+      "description": "经典提示工程技巧和模式，包括 Anthropic 最佳实践，让你的提示效果拉满。",
+      "description_en": "Classic prompt engineering techniques and patterns, including Anthropic best practices.",
+      "repo": "https://github.com/NeoLabHQ/context-engineering-kit",
+      "path": "plugins/customaize-agent/skills/prompt-engineering",
+      "category": "productivity"
+    },
+    {
+      "name": "pypict-claude-skill",
+      "title": "PyPICT Claude Skill",
+      "description": "用 PICT 成对组合测试为需求或代码设计全面的测试用例。",
+      "description_en": "Design comprehensive test cases with PICT pairwise combination testing.",
+      "repo": "https://github.com/omkamal/pypict-claude-skill",
+      "path": "",
+      "category": "testing"
+    },
+    {
+      "name": "reddit-fetch",
+      "title": "Reddit Fetch",
+      "description": "当 WebFetch 被封或返回 403 时，用 Gemini CLI 从 Reddit 获取内容。",
+      "description_en": "Fetch Reddit content via Gemini CLI when WebFetch is blocked or returns 403.",
+      "repo": "https://github.com/ykdojo/claude-code-tips",
+      "path": "skills/reddit-fetch",
+      "category": "integration"
+    },
+    {
+      "name": "skill-creator",
+      "title": "Skill Creator",
+      "description": "手把手打造高效的 Claude 技能，涵盖专业领域知识、工作流和工具集成。",
+      "description_en": "Step-by-step guide to building effective Claude skills with domain knowledge, workflows, and tooling.",
+      "repo": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "path": "skill-creator",
+      "category": "productivity"
+    },
+    {
+      "name": "skill-seekers",
+      "title": "Skill Seekers",
+      "description": "几分钟内把任何文档网站自动变成 Claude AI 技能。",
+      "description_en": "Turn any documentation website into a Claude AI skill in minutes.",
+      "repo": "https://github.com/yusufkaraaslan/Skill_Seekers",
+      "path": "",
+      "category": "productivity"
+    },
+    {
+      "name": "software-architecture",
+      "title": "Software Architecture",
+      "description": "Clean Architecture、SOLID 原则以及全面的软件设计最佳实践。",
+      "description_en": "Design patterns including Clean Architecture, SOLID principles, and software design best practices.",
+      "repo": "https://github.com/NeoLabHQ/context-engineering-kit",
+      "path": "plugins/ddd/skills/software-architecture",
+      "category": "development"
+    },
+    {
+      "name": "subagent-driven-development",
+      "title": "Subagent Driven Development",
+      "description": "为每个任务分派独立的子代理，并在迭代之间设置代码审查检查点，实现快速且可控的开发。",
+      "description_en": "Dispatch independent subagents per task with code-review checkpoints between iterations.",
+      "repo": "https://github.com/NeoLabHQ/context-engineering-kit",
+      "path": "plugins/sadd/skills/subagent-driven-development",
+      "category": "development"
+    },
+    {
+      "name": "test-driven-development",
+      "title": "Test Driven Development",
+      "description": "在编写实现代码之前，先写测试，用于实现任何功能或修复 bug。",
+      "description_en": "Write tests before implementation code to drive any feature or bug fix.",
+      "repo": "https://github.com/obra/superpowers",
+      "path": "skills/test-driven-development",
+      "category": "development"
+    },
+    {
+      "name": "using-git-worktrees",
+      "title": "Using Git Worktrees",
+      "description": "通过智能目录选择和安全验证，创建隔离的 Git 工作树。",
+      "description_en": "Create isolated Git worktrees with smart directory selection and safe validation.",
+      "repo": "https://github.com/obra/superpowers",
+      "path": "skills/using-git-worktrees",
+      "category": "development"
+    },
+    {
+      "name": "connect",
+      "title": "Connect",
+      "description": "把 Claude 接入任何应用：发邮件、创建问题、发消息、更新数据库，跨 1000+ 服务。",
+      "description_en": "Connect Claude to any app — email, issues, messages, databases — across 1000+ services.",
+      "repo": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "path": "connect",
+      "category": "integration"
+    },
+    {
+      "name": "webapp-testing",
+      "title": "Webapp Testing",
+      "description": "用 Playwright 测试本地 Web 应用，验证前端功能、调试 UI 行为、抓取截图。",
+      "description_en": "Test local web apps with Playwright: verify frontend functionality, debug UI, capture screenshots.",
+      "repo": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "path": "webapp-testing",
+      "category": "testing"
+    }
+  ]
+}

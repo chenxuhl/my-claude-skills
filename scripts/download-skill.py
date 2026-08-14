@@ -1,278 +1,219 @@
 #!/usr/bin/env python3
-"""
-Download full skill content from official repositories.
-Usage: python scripts/download-skill.py <skill-name>
+"""Download full skill content from official repositories.
+
+Reads skill metadata from skills/registry.json (single source of truth),
+clones each upstream repository once per run, extracts the requested skill
+directories, and records provenance (commit SHA + timestamp) in source.json.
+
+Usage:
+    python scripts/download-skill.py <skill-name>   # download one skill
+    python scripts/download-skill.py all            # download every skill
+    python scripts/download-skill.py --list         # list available skills
+    python scripts/download-skill.py <name> --force # overwrite existing content
 """
 
 import argparse
-import os
+import json
+import shutil
 import subprocess
 import sys
+import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
-# Skill repository mappings
-SKILL_REPOS = {
-    "artifacts-builder": {
-        "repo": "https://github.com/anthropics/skills.git",
-        "path": "skills/web-artifacts-builder",
-    },
-    "aws-skills": {
-        "repo": "https://github.com/zxkane/aws-skills.git",
-        "path": "skills",
-    },
-    "changelog-generator": {
-        "repo": "https://github.com/ComposioHQ/awesome-claude-skills.git",
-        "path": "changelog-generator",
-    },
-    "claude-code-terminal-title": {
-        "repo": "https://github.com/bluzername/claude-code-terminal-title.git",
-        "path": "",
-    },
-    "d3js-visualization": {
-        "repo": "https://github.com/chrisvoncsefalvay/claude-d3js-skill.git",
-        "path": "",
-    },
-    "ffuf-web-fuzzing": {
-        "repo": "https://github.com/jthack/ffuf_claude_skill.git",
-        "path": "",
-    },
-    "finishing-a-development-branch": {
-        "repo": "https://github.com/obra/superpowers.git",
-        "path": "skills/finishing-a-development-branch",
-    },
-    "ios-simulator": {
-        "repo": "https://github.com/conorluddy/ios-simulator-skill.git",
-        "path": "",
-    },
-    "jules": {
-        "repo": "https://github.com/sanjay3290/ai-skills.git",
-        "path": "skills/jules",
-    },
-    "langsmith-fetch": {
-        "repo": "https://github.com/ComposioHQ/awesome-claude-skills.git",
-        "path": "langsmith-fetch",
-    },
-    "mcp-builder": {
-        "repo": "https://github.com/ComposioHQ/awesome-claude-skills.git",
-        "path": "mcp-builder",
-    },
-    "move-code-quality-skill": {
-        "repo": "https://github.com/1NickPappas/move-code-quality-skill.git",
-        "path": "",
-    },
-    "playwright-browser-automation": {
-        "repo": "https://github.com/lackeyjb/playwright-skill.git",
-        "path": "",
-    },
-    "prompt-engineering": {
-        "repo": "https://github.com/NeoLabHQ/context-engineering-kit.git",
-        "path": "plugins/customaize-agent/skills/prompt-engineering",
-    },
-    "pypict-claude-skill": {
-        "repo": "https://github.com/omkamal/pypict-claude-skill.git",
-        "path": "",
-    },
-    "reddit-fetch": {
-        "repo": "https://github.com/ykdojo/claude-code-tips.git",
-        "path": "skills/reddit-fetch",
-    },
-    "skill-creator": {
-        "repo": "https://github.com/ComposioHQ/awesome-claude-skills.git",
-        "path": "skill-creator",
-    },
-    "skill-seekers": {
-        "repo": "https://github.com/yusufkaraaslan/Skill_Seekers.git",
-        "path": "",
-    },
-    "software-architecture": {
-        "repo": "https://github.com/NeoLabHQ/context-engineering-kit.git",
-        "path": "plugins/ddd/skills/software-architecture",
-    },
-    "subagent-driven-development": {
-        "repo": "https://github.com/NeoLabHQ/context-engineering-kit.git",
-        "path": "plugins/sadd/skills/subagent-driven-development",
-    },
-    "test-driven-development": {
-        "repo": "https://github.com/obra/superpowers.git",
-        "path": "skills/test-driven-development",
-    },
-    "using-git-worktrees": {
-        "repo": "https://github.com/obra/superpowers.git",
-        "path": "skills/using-git-worktrees",
-    },
-    "connect": {
-        "repo": "https://github.com/ComposioHQ/awesome-claude-skills.git",
-        "path": "connect",
-    },
-    "webapp-testing": {
-        "repo": "https://github.com/ComposioHQ/awesome-claude-skills.git",
-        "path": "webapp-testing",
-    },
-}
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent
+SKILLS_DIR = PROJECT_ROOT / "skills"
+REGISTRY_FILE = SKILLS_DIR / "registry.json"
+
+# Must stay in sync with scripts/setup-skills.py
+TEMPLATE_MARKER = "此技能的完整内容需要从官方仓库获取"
+
+# Directories that must never be copied out of a clone.
+EXCLUDE_DIRS = {".git", ".github", "node_modules", "__pycache__"}
 
 
-def run_command(cmd, cwd=None):
-    """Run a command and return its output."""
-    result = subprocess.run(
-        cmd,
-        shell=True,
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-    )
-    return result.returncode, result.stdout, result.stderr
+def load_registry() -> dict:
+    if not REGISTRY_FILE.exists():
+        print(f"ERROR: Registry not found at {REGISTRY_FILE}", file=sys.stderr)
+        sys.exit(1)
+    with REGISTRY_FILE.open(encoding="utf-8") as f:
+        return json.load(f)
 
 
-def download_skill(skill_name: str, force: bool = False):
-    """Download a skill from its official repository."""
-    if skill_name not in SKILL_REPOS:
-        print(f"Error: Skill '{skill_name}' not found in registry.")
-        print("Available skills:")
-        for name in sorted(SKILL_REPOS.keys()):
-            print(f"  - {name}")
+def check_git() -> bool:
+    if shutil.which("git") is None:
+        print("ERROR: 'git' not found on PATH. Git is required to download skills.", file=sys.stderr)
         return False
-
-    repo_info = SKILL_REPOS[skill_name]
-    repo_url = repo_info["repo"]
-    repo_path = repo_info["path"]
-
-    # Paths
-    script_dir = Path(__file__).parent
-    project_root = script_dir.parent
-    skills_dir = project_root / "skills"
-    skill_dir = skills_dir / skill_name
-    temp_dir = project_root / ".temp" / skill_name
-
-    print(f"Downloading skill: {skill_name}")
-    print(f"Source: {repo_url}")
-    print(f"Target: {skill_dir}")
-    print()
-
-    # Check if skill already has content
-    if skill_dir.exists():
-        refs_dir = skill_dir / "references"
-        scripts_dir = skill_dir / "scripts"
-        has_content = (
-            (refs_dir.exists() and any(refs_dir.iterdir()))
-            or (scripts_dir.exists() and any(scripts_dir.iterdir()))
-        )
-
-        if has_content and not force:
-            response = input(f"Skill '{skill_name}' already has content. Overwrite? (y/N): ")
-            if response.lower() != "y":
-                print("Download cancelled.")
-                return False
-
-    # Clean temp directory
-    if temp_dir.exists():
-        import shutil
-        shutil.rmtree(temp_dir)
-
-    # Clone repository
-    print("Cloning repository...")
-    returncode, stdout, stderr = run_command(f"git clone --depth 1 {repo_url} \"{temp_dir}\"")
-    if returncode != 0:
-        print(f"Error cloning repository: {stderr}")
-        return False
-
-    # Determine source directory
-    source_dir = temp_dir
-    if repo_path:
-        source_dir = temp_dir / repo_path
-        if not source_dir.exists():
-            print(f"Warning: Expected path '{repo_path}' not found in repository.")
-            print("Using repository root instead.")
-            source_dir = temp_dir
-
-    # Copy files to skill directory
-    print("Copying files...")
-    import shutil
-
-    # Copy references
-    refs_source = source_dir / "references"
-    if refs_source.exists():
-        refs_target = skill_dir / "references"
-        if refs_target.exists():
-            shutil.rmtree(refs_target)
-        shutil.copytree(refs_source, refs_target)
-        print(f"  Copied references/")
-
-    # Copy scripts
-    scripts_source = source_dir / "scripts"
-    if scripts_source.exists():
-        scripts_target = skill_dir / "scripts"
-        if scripts_target.exists():
-            shutil.rmtree(scripts_target)
-        shutil.copytree(scripts_source, scripts_target)
-        print(f"  Copied scripts/")
-
-    # Copy skill.md if it exists and is different
-    skill_md_source = source_dir / "skill.md"
-    if skill_md_source.exists():
-        # Read both files and compare
-        existing_content = (skill_dir / "skill.md").read_text(encoding="utf-8") if (skill_dir / "skill.md").exists() else ""
-        new_content = skill_md_source.read_text(encoding="utf-8")
-
-        # Only copy if content is significantly different (not just our template)
-        if "此技能的完整内容需要从官方仓库获取" not in new_content:
-            (skill_dir / "skill.md").write_text(new_content, encoding="utf-8")
-            print(f"  Updated skill.md")
-
-    # Clean up
-    print("Cleaning up...")
-    shutil.rmtree(temp_dir)
-
-    print()
-    print(f"Successfully downloaded skill: {skill_name}")
     return True
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Download full skill content from official repositories"
-    )
-    parser.add_argument(
-        "skill",
-        nargs="?",
-        help="Skill name to download (or 'all' to download all skills)"
-    )
-    parser.add_argument(
-        "-f", "--force",
-        action="store_true",
-        help="Force overwrite existing content"
-    )
-    parser.add_argument(
-        "-l", "--list",
-        action="store_true",
-        help="List all available skills"
-    )
+def group_by_repo(registry: dict) -> dict:
+    """Group skills by upstream repository URL so each repo is cloned once."""
+    groups: dict[str, list] = {}
+    for skill in registry["skills"]:
+        groups.setdefault(skill["repo"], []).append(skill)
+    return groups
 
+
+def run_git(args: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess:
+    """Run a git command safely. Never raises — OSError maps to a 127 result."""
+    try:
+        return subprocess.run(
+            ["git", *args],
+            cwd=str(cwd) if cwd else None,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+    except OSError as exc:  # git missing or blocked by the environment
+        return subprocess.CompletedProcess(
+            ["git", *args], 127, stdout="", stderr=f"cannot run git: {exc}"
+        )
+
+
+def clone_repo(repo_url: str, dest: Path) -> str | None:
+    """Shallow-clone a repository into dest. Returns the HEAD commit SHA."""
+    print(f"  Cloning {repo_url} ...")
+    result = run_git(["clone", "--depth", "1", repo_url, str(dest)])
+    if result.returncode != 0:
+        print(f"  ERROR: clone failed: {result.stderr.strip()}", file=sys.stderr)
+        return None
+    sha_result = run_git(["rev-parse", "HEAD"], cwd=dest)
+    if sha_result.returncode == 0:
+        return sha_result.stdout.strip()
+    return None
+
+
+def is_template_only(skill_dir: Path) -> bool:
+    """True if the skill directory contains only the setup-generated template."""
+    md = skill_dir / "skill.md"
+    if not md.exists():
+        return True
+    return TEMPLATE_MARKER in md.read_text(encoding="utf-8", errors="replace")
+
+
+def copy_tree(src: Path, dst: Path) -> None:
+    """Copy src tree into dst, excluding EXCLUDE_DIRS."""
+    if dst.exists():
+        shutil.rmtree(dst)
+    dst.mkdir(parents=True, exist_ok=True)
+    for item in src.iterdir():
+        if item.name in EXCLUDE_DIRS:
+            continue
+        target = dst / item.name
+        if item.is_dir():
+            shutil.copytree(item, target, ignore=shutil.ignore_patterns(*EXCLUDE_DIRS))
+        else:
+            shutil.copy2(item, target)
+
+
+def extract_skill(clone_dir: Path, skill: dict, force: bool) -> bool:
+    """Copy one skill out of a fresh clone. Returns success."""
+    name = skill["name"]
+    skill_dir = SKILLS_DIR / name
+    skill_dir.mkdir(parents=True, exist_ok=True)
+
+    repo_path = (skill.get("path") or "").strip().strip("/")
+    source_dir = clone_dir / repo_path if repo_path else clone_dir
+    if not source_dir.exists():
+        print(f"  WARNING: path '{repo_path}' not found in repository, using repo root instead.")
+        source_dir = clone_dir
+
+    # Decide whether we may overwrite an existing skill.md.
+    has_real_content = not is_template_only(skill_dir)
+    if has_real_content and not force:
+        response = input(f"  Skill '{name}' already has content. Overwrite? (y/N): ")
+        if response.lower() != "y":
+            print(f"  [SKIP] {name}")
+            return False
+
+    copy_tree(source_dir, skill_dir)
+
+    # Keep our template metadata if upstream has no skill.md of its own.
+    if not (source_dir / "skill.md").exists() and not (skill_dir / "skill.md").exists():
+        print(f"  WARNING: upstream '{name}' has no skill.md; template retained.")
+
+    # Record provenance.
+    sha = None
+    sha_result = run_git(["rev-parse", "HEAD"], cwd=clone_dir)
+    if sha_result.returncode == 0:
+        sha = sha_result.stdout.strip()
+    source_info = {
+        "skill": name,
+        "repo": skill["repo"],
+        "path": repo_path,
+        "commit": sha,
+        "downloaded_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+    (skill_dir / "source.json").write_text(
+        json.dumps(source_info, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    print(f"  [OK] {name} -> {skill_dir.relative_to(PROJECT_ROOT)} (commit {sha or 'unknown'})")
+    return True
+
+
+def download_skills(names: list[str] | None, force: bool) -> int:
+    registry = load_registry()
+    registry_skills = {s["name"]: s for s in registry["skills"]}
+
+    if names is None:
+        targets = list(registry_skills.values())
+    else:
+        unknown = [n for n in names if n not in registry_skills]
+        if unknown:
+            print(f"ERROR: unknown skill(s): {', '.join(unknown)}", file=sys.stderr)
+            return 1
+        targets = [registry_skills[n] for n in names]
+
+    if not check_git():
+        return 1
+
+    groups = group_by_repo(registry)
+    workdir = Path(tempfile.mkdtemp(prefix="claude-skills-dl-"))
+    success = 0
+    try:
+        for repo_url, skills in groups.items():
+            wanted = [s for s in skills if s["name"] in {t["name"] for t in targets}]
+            if not wanted:
+                continue
+            clone_dir = workdir / f"repo-{groups[repo_url][0]['name']}"
+            sha = clone_repo(repo_url, clone_dir)
+            if sha is None:
+                continue
+            for skill in wanted:
+                if extract_skill(clone_dir, skill, force):
+                    success += 1
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)
+
+    print(f"\nDownloaded {success}/{len(targets)} skills successfully.")
+    return 0 if success == len(targets) else 1
+
+
+def list_skills() -> int:
+    registry = load_registry()
+    for skill in sorted(registry["skills"], key=lambda s: s["name"]):
+        print(f"  {skill['name']:32} [{skill['category']:12}] {skill['repo']}")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Download full skill content from official repositories")
+    parser.add_argument("skill", nargs="?", help="Skill name to download, or 'all'")
+    parser.add_argument("-f", "--force", action="store_true", help="Force overwrite existing content")
+    parser.add_argument("-l", "--list", action="store_true", help="List all available skills")
     args = parser.parse_args()
 
     if args.list:
-        print("Available skills:")
-        for name in sorted(SKILL_REPOS.keys()):
-            info = SKILL_REPOS[name]
-            print(f"  {name:30} {info['repo']}")
-        return 0
-
+        return list_skills()
     if not args.skill:
         parser.print_help()
         return 1
-
     if args.skill == "all":
-        print("Downloading all skills...")
-        print()
-        success_count = 0
-        for skill_name in sorted(SKILL_REPOS.keys()):
-            if download_skill(skill_name, args.force):
-                success_count += 1
-            print()
-
-        print(f"Downloaded {success_count}/{len(SKILL_REPOS)} skills successfully.")
-        return 0
-
-    return 0 if download_skill(args.skill, args.force) else 1
+        return download_skills(None, args.force)
+    return download_skills([args.skill], args.force)
 
 
 if __name__ == "__main__":

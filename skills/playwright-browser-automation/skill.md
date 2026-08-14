@@ -20,7 +20,7 @@ repoUrl: https://github.com/lackeyjb/playwright-skill
 
 ## 说明
 
-此技能的完整内容需要从官方仓库获取。运行以下命令下载完整技能：
+此技能的完整内容需要从官方仓库获取 运行以下命令下载完整技能：
 
 ```bash
 python scripts/download-skill.py playwright-browser-automation
