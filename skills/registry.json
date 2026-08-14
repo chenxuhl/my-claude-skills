@@ -1,25 +1,25 @@
 {
   "version": "2.0.0",
-  "description": "mattpocock × superpowers 组合最佳实践：复杂度路由 + 技能去重。本文件是 choose-skill 路由层的结构化数据源。",
+  "description": "小需求 Matt、大需求可选 superpowers 的组合最佳实践。本文件是 choose-skill 路由层的结构化数据源。",
   "sources": {
     "mattpocock": {
       "repo": "https://github.com/mattpocock/skills",
       "install_in_shell": "claude plugins install mattpocock-skills",
       "install_editable": "npx skills@latest add mattpocock/skills",
-      "tier": "L2",
-      "philosophy": "小、易改、可组合；对抗 GSD/BMAD 这种接管流程的方案；每步做完即停，不自动链式"
+      "tier": "L1/L2/L3 默认",
+      "philosophy": "小、易改、可组合；每步做完即停，不自动链式；轻量任务的主力"
     },
     "superpowers": {
       "repo": "https://github.com/obra/superpowers",
       "install_in_session": "/plugin install superpowers@claude-plugins-official",
-      "tier": "L3",
-      "philosophy": "完整方法论；spec→plan→subagent→review；agent 可自主工作数小时不偏航"
+      "tier": "L3 选项之一",
+      "philosophy": "完整方法论；spec→plan→subagent→review；agent 可自主工作数小时；大需求的两条合法路径之一，不再降级为 opt-in"
     }
   },
   "router": {
     "skill": "choose-skill",
     "path": "skills/choose-skill/SKILL.md",
-    "purpose": "按复杂度路由到最轻够用的流程，避免过度流程化",
+    "purpose": "小需求走 Matt 不让模型滑进 superpowers 仪式；大需求在 Matt ticket 流和 superpowers 全流程间二选一",
     "bias": "down — 两档犹豫时选低的；现实证明更重可中途升级，但已烧在仪式上的 token 退不回来"
   },
   "routing_rules": {
@@ -32,41 +32,42 @@
       "action": "单个 Matt 技能，每步做完停，等用户确认下一跳",
       "entry_table": "见 choose-skill/SKILL.md Step 2"
     },
-    "L3_full_flow": {
-      "condition": ">3 文件/多模块/多会话/多设计决策/需并行 agent",
-      "action": "先确认再进入 superpowers 全流程：brainstorming → writing-plans → subagent-driven-development → review",
-      "confirm_first": true
+    "L3_two_paths": {
+      "condition": ">3 文件/多模块/多会话/多设计决策",
+      "action": "先确认再进入，二选一：Matt 的 to-spec→to-tickets→implement 流水线（含 wayfinder/improve-codebase-architecture）或 superpowers 全流程（brainstorming→worktrees→writing-plans→subagent-driven-development→review→finishing）",
+      "confirm_first": true,
+      "pick_rule": "按工作形状选：要 ticket 逐个交付用 Matt；要 agent 长时间自主/并行用 superpowers；犹豫时默认 Matt ticket 流（更易中断转向）"
     }
   },
   "overlap_resolution": [
     {
       "job": "测试先行",
-      "use": "tdd",
-      "drop": "test-driven-development",
-      "reason": "Matt 的更轻量，做完即停"
+      "l1l2_default": "tdd",
+      "l3_alternative": "test-driven-development",
+      "reason": "L1/L2 走 Matt；L3 按所选流程走"
     },
     {
       "job": "调试 bug",
-      "use": "diagnosing-bugs",
-      "drop": "systematic-debugging",
-      "reason": "Matt 的强调先建红反馈环再修，更适合难复现/性能回归"
+      "l1l2_default": "diagnosing-bugs",
+      "l3_alternative": "systematic-debugging",
+      "reason": "Matt 的强调先建红反馈环；superpowers 的偏 4 阶段根因"
     },
     {
       "job": "代码审查",
-      "use": "code-review",
-      "drop": "requesting-code-review",
-      "reason": "Matt 的双轴（Standards + Spec）并行更聚焦"
+      "l1l2_default": "code-review",
+      "l3_alternative": "requesting-code-review",
+      "reason": "Matt 的双轴并行更聚焦；superpowers 的配套其全流程"
     },
     {
       "job": "计划访谈",
-      "use": "grill-me",
-      "drop": "brainstorming",
-      "reason": "grill-me 更聚焦于 sharpen the goal，brainstorming 偏 Socratic 探索"
+      "l1l2_default": "grill-me",
+      "l3_alternative": "brainstorming",
+      "reason": "grill-me 聚焦 sharpen the goal；brainstorming 偏 Socratic 探索"
     }
   ],
   "complementary_not_overlapping": [
-    "to-spec (Matt, WHAT/why → tracker) + writing-plans (superpowers, HOW/code → repo) 仅在 L3 顺序使用",
-    "wayfinder (Matt, 超大工作的决策 ticket 地图) 在 L3 入口分流后回到 L2/L3 per ticket",
+    "to-spec (Matt, WHAT/why → tracker) 在 L3 选中 superpowers 流时接 writing-plans (HOW/code → repo)",
+    "wayfinder (Matt, 超大工作的决策 ticket 地图) 在 L3 入口分流后回到 L2 per ticket",
     "improve-codebase-architecture (Matt, 架构扫描 + 深化报告) 独有的架构级工作"
   ]
 }

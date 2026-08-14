@@ -1,11 +1,11 @@
 ---
 name: choose-skill
-description: Triage EVERY request by complexity first, then route to the lightest flow that is sufficient — do trivial work directly, use a single Matt-Pocock skill for focused work, and escalate to the full Superpowers flow only for large/architectural/multi-session work. Use this before invoking any other engineering skill.
+description: Triage EVERY request by complexity first, then route to the lightest flow that is sufficient — do trivial work directly, use a single Matt-Pocock skill for focused work, and for large/multi-session work pick between Matt's ticket-driven flow and Superpowers' full flow by the shape of the work. Small work never enters Superpowers; large work may. Use this before invoking any other engineering skill.
 ---
 
 # choose-skill — complexity triage & routing
 
-The default failure mode here is **over-process**: reaching for `brainstorming` -> `writing-plans` -> `subagent-driven-development` on work that needed one edit. choose-skill fixes that. Before invoking any other skill, classify the request into one tier and route to the **lightest flow that is sufficient**.
+The default failure mode here is **over-process**: reaching for `brainstorming` -> `writing-plans` -> `subagent-driven-development` on work that needed one edit. choose-skill fixes that. Before invoking any other skill, classify the request into one tier and route to the **lightest flow that is sufficient**. Matt-Pocock skills are the default at L1 and L2; Superpowers enters only at L3, and even there as one of two equal options — never the reflexive default.
 
 **Bias down.** When torn between two tiers, pick the lower one. You can always escalate mid-task if reality proves heavier; you cannot cheaply refund tokens already burned on ceremony.
 
@@ -59,39 +59,44 @@ A single concern, roughly ≤3 files, goal already clear enough. Invoke skills *
 
 If two L2 skills apply in sequence (e.g. `to-spec` then `implement`), run them one at a time — that is still L2, not L3.
 
-### Overlapping skills — pick ONE side, don't run both
-Several Matt and Superpowers skills do the same job. In L2, default to the Matt one (lighter, stops when done). Never chain both for the same task.
+### Overlapping skills — L1/L2 default to Matt, L3 may use either
+Several Matt and Superpowers skills do the same job. At L1/L2, default to the Matt one — Superpowers stays out of the light tiers. At L3, either side may serve depending on the shape of the work.
 
-| Job | Use (L2 default) | Don't also run |
+| Job | L1/L2 default (Matt) | Superpowers equivalent (L3 option) |
 |---|---|---|
 | Test-first loop | `tdd` | `test-driven-development` |
 | Diagnose a bug | `diagnosing-bugs` | `systematic-debugging` |
 | Review changes | `code-review` | `requesting-code-review` |
-| Interview to sharpen a plan | `grill-me` | `brainstorming` |
+| Interview to sharpen a plan | `(U)grill-me` | `brainstorming` |
 
-Not overlapping — complementary, can be used in sequence: `to-spec` (WHAT/why, -> tracker) then Superpowers `writing-plans` (HOW, code-level -> repo) only when the work is L3 and needs an auto-executed build sheet.
+Not overlapping — complementary, can be used in sequence: `(U)to-spec` (WHAT/why, -> tracker) then, in L3, Superpowers `writing-plans` (HOW, code-level -> repo) if you picked the Superpowers flow.
 
 ### After every L2 skill: signpost the next step
 Matt-Pocock skills are discrete steps that STOP when done — they never auto-chain into implementation/tests/review. So on finishing any L2 skill, do NOT go silent and do NOT auto-continue. End with one line naming the next hop from the entry table's "Then" column: `Next: {skill or "done"} — continue? (or /ask-matt to explore options)`. The user decides whether to take the next step.
 
 If the natural next step is unclear, say so and tell the user to run `/ask-matt` rather than guessing.
 
-### L3 · Full Superpowers flow (heavy — CONFIRM FIRST)
+### L3 · Large work (CONFIRM FIRST)
 Escalate only when **at least one** hard trigger is met:
 - change spans more than ~3 files or multiple modules
 - work is too big for one session / needs a shared map across sessions
 - several branching design decisions still open
 - user explicitly asks to build a whole feature end-to-end, or to run autonomously for a long stretch
-- needs isolated branches or parallel agents
 
-**Before entering L3, stop and confirm** with the user ("This looks L3 — I'll run the full flow: {list}. Proceed?"). Then route:
+**Before entering L3, stop and confirm** with the user ("This looks L3 — I'll run: {list}. Proceed?"). Then pick **one** of the two L3 flows — don't run both:
 
-- Standard heavy feature -> `brainstorming` -> `using-git-worktrees` -> `writing-plans` -> `subagent-driven-development` (or `executing-plans`) -> `requesting-code-review` -> `finishing-a-development-branch`
-- Work larger than one session can hold -> Matt's `wayfinder` (decision-ticket map), then drop back to L2/L3 per ticket
-- Architecture-wide scan & deepening -> Matt's `improve-codebase-architecture`
+- **Matt ticket-driven flow** -> `(U)to-spec` -> `(U)to-tickets` -> `(U)implement` per ticket -> `code-review`
+  - Best when the work splits into independent tickets you want to ship one at a time.
+  - For work larger than one session: `(U)wayfinder` (decision-ticket map) first, then drop back to L2 per ticket.
+  - For architecture-wide scan & deepening: `(U)improve-codebase-architecture`.
+- **Superpowers full flow** -> `brainstorming` -> `using-git-worktrees` -> `writing-plans` -> `subagent-driven-development` (or `executing-plans`) -> `requesting-code-review` -> `finishing-a-development-branch`
+  - Best when you want the agent to run autonomously for a long stretch, or need subagent parallelism / isolated worktrees.
+
+Pick by the shape of the work, not by habit. If unsure, default to Matt's ticket flow — it's easier to interrupt and re-steer mid-flight.
 
 ## Anti-rationalizations
 - "Better safe — I'll plan it properly" -> no; that is the over-process failure. Match effort to size.
-- "It's L3 so I'll just start brainstorming" -> no; confirm first, heavy flows are opt-in.
+- "It's L3 so I should use Superpowers" -> only if the work needs autonomous long-stretch execution or subagent parallelism. Otherwise Matt's ticket flow is lighter and just as valid for L3.
+- "It's L1/L2 but I'll quickly use a Superpowers skill" -> no; Superpowers stays out of L1 and L2. It only enters at L3, and even then as one of two equal options, not the default.
 - "It's L1 but I'll quickly write a spec" -> no; L1 means do it.
 - Uncertain between L2 and L3 -> treat as L2, note the risk, escalate only if a hard trigger actually fires.
