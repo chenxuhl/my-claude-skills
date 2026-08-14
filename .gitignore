@@ -22,6 +22,7 @@ ENV/
 # Temp / downloads (download-skill.py clones upstream repos here)
 .temp/
 tests/_tmp/
+tests/_sandbox_probe_*/
 
 # IDE / OS
 .vscode/
