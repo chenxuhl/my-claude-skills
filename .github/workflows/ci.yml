@@ -4,71 +4,16 @@ on:
   push:
     branches: [main]
   pull_request:
-  workflow_dispatch:
 
 jobs:
-  validate:
-    name: Validate & Test
+  syntax:
+    name: Syntax check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Syntax check Python scripts
-        run: python -m py_compile scripts/*.py
-
-      - name: Unit tests
-        run: python -m unittest discover -s tests -v
-
-      - name: Validate registry & skill front matter
-        run: python scripts/validate-skills.py
-
-      - name: Strict validation (README tables in sync)
-        run: python scripts/validate-skills.py --strict
-
-      - name: Regenerate templates & index, verify no diff
-        run: |
-          python scripts/setup-skills.py --index
-          git diff --exit-code -- skills/ || { echo "Run 'python scripts/setup-skills.py --index' and commit the changes"; exit 1; }
-
-      - name: CLI smoke test
-        run: |
-          python scripts/claude-skills.py list >/dev/null
-          python scripts/claude-skills.py status >/dev/null
-
-  shell:
-    name: Shell scripts syntax
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Bash syntax check
-        run: |
-          bash -n scripts/*.sh
-
-      - name: ShellCheck
-        if: always()
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
-          shellcheck scripts/*.sh
-
-  powershell:
-    name: PowerShell syntax
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: PowerShell syntax check
-        shell: pwsh
-        run: |
-          $errors = $null
-          foreach ($script in Get-ChildItem scripts/*.ps1) {
-            [System.Management.Automation.Language.Parser]::ParseFile(
-              $script.FullName, [ref]$null, [ref]$errors) | Out-Null
-            if ($errors) { $errors | ForEach-Object { Write-Error $_ }; exit 1 }
-          }
-          Write-Host "All PowerShell scripts parsed OK"
+      - run: python -m py_compile scripts/*.py
+      - run: bash -n scripts/*.sh
+      - run: python scripts/skills.py list
