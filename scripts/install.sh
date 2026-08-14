@@ -81,9 +81,10 @@ for skill_dir in "$SKILLS_SOURCE"/*/; do
     skill_md="$skill_dir/skill.md"
     if [ -f "$skill_md" ]; then
         title=$(grep "^title:" "$skill_md" | sed 's/title: //; s/"//g' | xargs)
-        echo "  - $title"
-    else
-        echo "  - $skill_name"
     fi
+    if [ -z "$title" ]; then
+        title="$skill_name"
+    fi
+    echo "  - $title"
 done
 echo ""

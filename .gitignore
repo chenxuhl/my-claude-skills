@@ -3,39 +3,39 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
 build/
-develop-eggs/
 dist/
 downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Virtual environments
 venv/
+.venv/
 env/
 ENV/
 
-# IDE
+# Temp / downloads (download-skill.py clones upstream repos here)
+.temp/
+tests/_tmp/
+
+# IDE / OS
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Claude Code local settings
+# Logs
+*.log
+npm-debug.log*
+
+# Claude Code local settings (keep the shared settings.json template, ignore machine-local overrides)
 .claude/settings.local.json

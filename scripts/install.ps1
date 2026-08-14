@@ -98,11 +98,14 @@ Write-Host ""
 Write-Host "Skills are now available in Claude Code:" -ForegroundColor Green
 Get-ChildItem $SkillsSource -Directory | ForEach-Object {
     $skillMd = Join-Path $_.FullName "skill.md"
+    $title = $null
     if (Test-Path $skillMd) {
-        $title = (Get-Content $skillMd | Select-String "^title:").ToString().Replace("title: ", "").Replace('"', '').Trim()
-        Write-Host "  - $title" -ForegroundColor White
-    } else {
-        Write-Host "  - $($_.Name)" -ForegroundColor White
+        $match = Select-String -Path $skillMd -Pattern '^title:\s*(.+)$' | Select-Object -First 1
+        if ($match) {
+            $title = ($match.Line -replace '^title:\s*', '').Trim().Trim('"', "'")
+        }
     }
+    if (-not $title) { $title = $_.Name }
+    Write-Host "  - $title" -ForegroundColor White
 }
 Write-Host ""

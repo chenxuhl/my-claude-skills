@@ -1,21 +1,29 @@
 {
   "name": "claude-code-dev-skills",
   "version": "1.0.0",
-  "description": "常用 Claude Code 开发技能包",
-  "scripts": {
-    "setup": "python scripts/setup-skills.py",
-    "install": "node scripts/install.js",
-    "install:win": "powershell -ExecutionPolicy Bypass -File scripts/install.ps1",
-    "install:unix": "bash scripts/install.sh",
-    "uninstall:win": "powershell -ExecutionPolicy Bypass -File scripts/uninstall.ps1",
-    "uninstall:unix": "bash scripts/uninstall.sh"
-  },
+  "description": "常用 Claude Code 开发技能包：单一 registry 索引 + 跨平台安装器 + 按需下载器",
+  "license": "MIT",
+  "author": "",
   "keywords": [
     "claude-code",
     "skills",
     "ai",
-    "development"
+    "development",
+    "agent-skills"
   ],
-  "author": "",
-  "license": "MIT"
+  "scripts": {
+    "setup": "python scripts/setup-skills.py",
+    "setup:index": "python scripts/setup-skills.py --index",
+    "download": "python scripts/download-skill.py",
+    "download:all": "python scripts/download-skill.py all",
+    "validate": "python scripts/validate-skills.py",
+    "validate:strict": "python scripts/validate-skills.py --strict",
+    "test": "python -m unittest discover -s tests -v",
+    "lint": "python -m py_compile scripts/*.py",
+    "cli": "python scripts/claude-skills.py",
+    "install:win": "powershell -ExecutionPolicy Bypass -File scripts/install.ps1",
+    "install:unix": "bash scripts/install.sh",
+    "uninstall:win": "powershell -ExecutionPolicy Bypass -File scripts/uninstall.ps1",
+    "uninstall:unix": "bash scripts/uninstall.sh"
+  }
 }
