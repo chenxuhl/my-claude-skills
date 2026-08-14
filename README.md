@@ -2,11 +2,8 @@
 
 > A curated collection of Claude Code development skills — indexed, installed and downloaded from a single source of truth.
 
-<!--
-  Replace OWNER/REPO below with your actual GitHub repository once published.
-  Keep the skills count badge in sync with skills/registry.json.
--->
-[![CI](https://img.shields.io/github/actions/workflow/status/OWNER/REPO/ci.yml?branch=main&label=CI)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+<!-- Keep the skills count badge in sync with skills/registry.json. -->
+[![CI](https://img.shields.io/github/actions/workflow/status/chenxuhl/self-use-skills/ci.yml?branch=main&label=CI)](https://github.com/chenxuhl/self-use-skills/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skills: 24](https://img.shields.io/badge/skills-24-blue)](skills/INDEX.md)
 

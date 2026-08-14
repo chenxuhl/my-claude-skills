@@ -2,11 +2,8 @@
 
 > 精选的 Claude Code 开发技能集合 —— 由**单一数据源**驱动索引、安装与按需下载。
 
-<!--
-  发布到 GitHub 后，将下方徽章中的 OWNER/REPO 替换为实际仓库地址。
-  技能数量徽章请与 skills/registry.json 保持同步。
--->
-[![CI](https://img.shields.io/github/actions/workflow/status/OWNER/REPO/ci.yml?branch=main&label=CI)](https://github.com/OWNER/REPO/actions/workflows/ci.yml)
+<!-- 技能数量徽章请与 skills/registry.json 保持同步。 -->
+[![CI](https://img.shields.io/github/actions/workflow/status/chenxuhl/self-use-skills/ci.yml?branch=main&label=CI)](https://github.com/chenxuhl/self-use-skills/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skills: 24](https://img.shields.io/badge/skills-24-blue)](skills/INDEX.md)
 
