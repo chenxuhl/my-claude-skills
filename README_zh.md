@@ -3,7 +3,7 @@
 > 精选的 Claude Code 开发技能集合 —— 由**单一数据源**驱动索引、安装与按需下载。
 
 <!-- 技能数量徽章请与 skills/registry.json 保持同步。 -->
-[![CI](https://img.shields.io/github/actions/workflow/status/chenxuhl/self-use-skills/ci.yml?branch=main&label=CI)](https://github.com/chenxuhl/self-use-skills/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/chenxuhl/my-claude-skills/ci.yml?branch=main&label=CI)](https://github.com/chenxuhl/my-claude-skills/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skills: 24](https://img.shields.io/badge/skills-24-blue)](skills/INDEX.md)
 
@@ -82,7 +82,7 @@ python scripts/download-skill.py skill-creator --force      # 强制覆盖已有
 ## 项目结构
 
 ```
-self-use-skills/
+my-claude-skills/
 ├── skills/
 │   ├── registry.json          # 全部 24 个技能的单一数据源
 │   ├── INDEX.md               # 自动生成的技能索引（setup-skills.py --index）

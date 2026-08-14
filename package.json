@@ -1,5 +1,5 @@
 {
-  "name": "claude-code-dev-skills",
+  "name": "my-claude-skills",
   "version": "1.0.0",
   "description": "常用 Claude Code 开发技能包：单一 registry 索引 + 跨平台安装器 + 按需下载器",
   "license": "MIT",

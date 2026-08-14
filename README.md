@@ -3,7 +3,7 @@
 > A curated collection of Claude Code development skills — indexed, installed and downloaded from a single source of truth.
 
 <!-- Keep the skills count badge in sync with skills/registry.json. -->
-[![CI](https://img.shields.io/github/actions/workflow/status/chenxuhl/self-use-skills/ci.yml?branch=main&label=CI)](https://github.com/chenxuhl/self-use-skills/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/chenxuhl/my-claude-skills/ci.yml?branch=main&label=CI)](https://github.com/chenxuhl/my-claude-skills/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skills: 24](https://img.shields.io/badge/skills-24-blue)](skills/INDEX.md)
 
@@ -82,7 +82,7 @@ Each download records the upstream source in `skills/<name>/source.json`:
 ## Project Structure
 
 ```
-self-use-skills/
+my-claude-skills/
 ├── skills/
 │   ├── registry.json          # SINGLE SOURCE OF TRUTH for all 24 skills
 │   ├── INDEX.md               # auto-generated skill index (setup-skills.py --index)
