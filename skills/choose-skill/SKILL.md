@@ -33,27 +33,27 @@ One obvious change, or a question with a knowable answer.
 ### L2 · One focused skill (Matt-Pocock set — lightweight)
 A single concern, roughly ≤3 files, goal already clear enough. Invoke skills **one at a time, stopping after each** for the user to confirm the next hop.
 
-**Step A — pick the ENTRY skill by intent.** Match the request to a row; the "Then" column is the pre-arranged chain so the user never has to ask "what now". Each `->` is a manual, confirmed hop. A `(手动)` prefix marks a **user-only** skill: the model cannot auto-invoke it — instead tell the user `Run /<skill> to continue` and wait.
+**Step A — pick the ENTRY skill by intent.** Match the request to a row; the "Then" column is the pre-arranged chain so the user never has to ask "what now". Each `->` is a manual, confirmed hop. A `(U)` prefix marks a **user-only** skill: the model cannot auto-invoke it — instead tell the user `Run /<skill> to continue` and wait. Legend: `(U)` = user-only (model prints the `/command` and waits); bare name = model auto-invokes via the Skill tool.
 
 | The request is… | Enter at | Then (pre-arranged chain) |
 |---|---|---|
-| A feature, and it's already clear what's wanted | `tdd` (or (手动)`implement` if no tests) | -> `code-review` |
-| A feature, but not fully pinned down | (手动)`grill-me` | -> (手动)`to-spec` -> (手动)`implement`/`tdd` -> `code-review` |
-| A feature already discussed in this chat | (手动)`to-spec` | -> (手动)`implement`/`tdd` -> `code-review` |
+| A feature, and it's already clear what's wanted | `tdd` (or (U)`implement` if no tests) | -> `code-review` |
+| A feature, but not fully pinned down | (U)`grill-me` | -> (U)`to-spec` -> (U)`implement`/`tdd` -> `code-review` |
+| A feature already discussed in this chat | (U)`to-spec` | -> (U)`implement`/`tdd` -> `code-review` |
 | A bug / crash / perf regression | `diagnosing-bugs` | -> `tdd` (failing test -> fix to green) -> `code-review` |
-| Unsure how to model it (state/UI) | `prototype` | -> back to (手动)`to-spec` once the shape is clear |
-| Unsure of the domain terms | `domain-modeling` | -> (手动)`to-spec` |
-| A module's interface/seam feels wrong | `codebase-design` | -> `tdd`/(手动)`implement` -> `code-review` |
+| Unsure how to model it (state/UI) | `prototype` | -> back to (U)`to-spec` once the shape is clear |
+| Unsure of the domain terms | `domain-modeling` | -> (U)`to-spec` |
+| A module's interface/seam feels wrong | `codebase-design` | -> `tdd`/(U)`implement` -> `code-review` |
 | Need facts/docs/APIs first | `research` | -> back to the matching row above |
 | Reviewing existing changes | `code-review` | done |
 | A merge/rebase conflict | `resolving-merge-conflicts` | done |
-| Big enough to need tickets | (手动)`to-spec` -> (手动)`to-tickets` | -> (手动)`implement` per ticket -> `code-review` |
-| Teach a concept | (手动)`teach` | done |
-| Hand off this conversation | (手动)`handoff` | done |
+| Big enough to need tickets | (U)`to-spec` -> (U)`to-tickets` | -> (U)`implement` per ticket -> `code-review` |
+| Teach a concept | (U)`teach` | done |
+| Hand off this conversation | (U)`handoff` | done |
 
-**Step B — if no row fits, or two seem equally right:** `ask-matt` is the router, but it is (手动) user-only — so tell the user `Not sure which fits — run /ask-matt to route` rather than guessing or auto-invoking it.
+**Step B — if no row fits, or two seem equally right:** `ask-matt` is the router, but it is user-only `(U)` — so tell the user `Not sure which fits — run /ask-matt to route` rather than guessing or auto-invoking it.
 
-**(手动) user-only skills** (`to-spec`, `to-tickets`, `implement`, `grill-me`, `grill-with-docs`, `teach`, `handoff`, `ask-matt`, `wayfinder`, `improve-codebase-architecture`) can only be triggered by the user typing `/<name>`. When routing lands on one, do NOT pretend to invoke it — announce the tier/next step and print the exact `/command` for the user to run. Auto-invokable entries (`tdd`, `diagnosing-bugs`, `prototype`, `domain-modeling`, `codebase-design`, `research`, `code-review`, `resolving-merge-conflicts`) you invoke directly via the Skill tool.
+**User-only skills `(U)`** (`to-spec`, `to-tickets`, `implement`, `grill-me`, `grill-with-docs`, `teach`, `handoff`, `ask-matt`, `wayfinder`, `improve-codebase-architecture`) can only be triggered by the user typing `/<name>`. When routing lands on one, do NOT pretend to invoke it — announce the tier/next step and print the exact `/command` for the user to run. Auto-invokable entries (`tdd`, `diagnosing-bugs`, `prototype`, `domain-modeling`, `codebase-design`, `research`, `code-review`, `resolving-merge-conflicts`) you invoke directly via the Skill tool.
 
 **Small-request shortcut:** the smaller the task, the more hops to skip. Clear single-file change -> skip spec entirely, go straight to `tdd`/`implement` -> `code-review`. If it's a one-liner/typo/config, it's L1, not L2 — just do it.
 

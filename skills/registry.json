@@ -4,24 +4,23 @@
   "sources": {
     "mattpocock": {
       "repo": "https://github.com/mattpocock/skills",
-      "install_plugin": "claude plugins install mattpocock-skills",
+      "install_in_shell": "claude plugins install mattpocock-skills",
       "install_editable": "npx skills@latest add mattpocock/skills",
       "tier": "L2",
-      "count": 18,
       "philosophy": "小、易改、可组合；对抗 GSD/BMAD 这种接管流程的方案；每步做完即停，不自动链式"
     },
     "superpowers": {
       "repo": "https://github.com/obra/superpowers",
-      "install_plugin": "/plugin install superpowers@claude-plugins-official",
+      "install_in_session": "/plugin install superpowers@claude-plugins-official",
       "tier": "L3",
-      "count": 14,
       "philosophy": "完整方法论；spec→plan→subagent→review；agent 可自主工作数小时不偏航"
     }
   },
   "router": {
     "skill": "choose-skill",
     "path": "skills/choose-skill/SKILL.md",
-    "purpose": "按复杂度路由到最轻够用的流程，默认偏向下限，避免过度流程化"
+    "purpose": "按复杂度路由到最轻够用的流程，避免过度流程化",
+    "bias": "down — 两档犹豫时选低的；现实证明更重可中途升级，但已烧在仪式上的 token 退不回来"
   },
   "routing_rules": {
     "L1_direct": {

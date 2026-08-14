@@ -1,6 +1,6 @@
 # my-claude-skills
 
-> mattpocock × superpowers 组合最佳实践：用 `choose-skill` 做复杂度路由，让两个数据源各司其职、重叠区二选一，**匹配工作量而非放大工作量**。
+> 用 `choose-skill` 把 mattpocock 和 superpowers 剪裁成**按工作量自动匹配档位**的单一系统。
 
 ## 为什么组合
 
@@ -8,7 +8,7 @@
 
 | 维度 | mattpocock/skills | obra/superpowers |
 |------|-------------------|------------------|
-| 技能数 | ~18（engineering 为主） | 14（开发协作） |
+| 技能数 | ~18（以仓库为准） | ~14（以仓库为准） |
 | 定位 | L2 轻量层 | L3 重型层 |
 | 哲学 | 小、易改、可组合；每步做完即停 | 完整方法论；spec→plan→subagent→review，agent 可自主工作数小时 |
 | 擅长 | issue 驱动流水线、架构深挖、研究 | 大计划自主实现、并行多 agent 分派、设计头脑风暴 |
@@ -32,41 +32,43 @@
 
 - **L1 · 直接做** —— 单点修改、事实问题。不调任何技能。
 - **L2 · 单个 Matt 技能** —— ≤3 文件、目标已清晰。每步做完停，等用户确认下一跳。
-- **L3 · superpowers 全流程** —— >3 文件/多模块/多会话。**先确认再进入**：brainstorming → writing-plans → subagent-driven-development → review。
+- **L3 · superpowers 全流程** —— >3 文件/多模块/多会话。**先确认再进入**：`brainstorming` → `using-git-worktrees` → `writing-plans` → `subagent-driven-development`（或 `executing-plans`）→ `requesting-code-review` → `finishing-a-development-branch`。
 
-核心原则：**偏向下限**。两档之间犹豫时选低的；现实证明更重可以中途升级，但已烧在仪式上的 token 退不回来。
-
-结构化数据（两源元信息、路由规则、重叠去重表）在 [`skills/registry.json`](skills/registry.json)。
-
-## 安装
-
-三步配置完，之后 `choose-skill` 在每次工程请求前自动分档：
-
-```bash
-# 1. superpowers（托管、自动更新）——提供 L3 重型流程
-/plugin install superpowers@claude-plugins-official
-
-# 2. mattpocock（两种哲学，二选一）——提供 L2 轻量技能
-claude plugins install mattpocock-skills     # 托管只读，自动更新
-# 或
-npx skills@latest add mattpocock/skills      # 拷贝可编辑，手动 npx skills update
-
-# 3. 路由层（本仓库核心）
-cp skills/choose-skill/SKILL.md ~/.claude/skills/choose-skill/SKILL.md
-```
-
-两套都装会触发重叠——这恰好是 `choose-skill` 的价值所在：路由层已内建重叠区二选一规则（默认用 Matt 版本），无需手工剪裁。
-
-## 使用
-
-路由层装好后，在任何工程请求之前让 agent 先跑 `choose-skill` 分档。具体路由表见 [`skills/choose-skill/SKILL.md`](skills/choose-skill/SKILL.md) 的 Step 2。
+核心原则：**偏向下限**。两档之间犹豫时选低的；现实证明更重可以中途升级，但已烧在仪式上的 token 退不回来。分档前必须 announce `choose-skill: L{n} — {reason}`，用户可一词否决。
 
 体感差异：
 - **改 typo** → 不再被模型带进 brainstorming→plan 仪式，L1 直接改完
 - **调一个难复现 bug** → 自动走 Matt 的 `diagnosing-bugs`（先建红反馈环），不会误触 superpowers 的 `systematic-debugging` 重复跑
 - **做一个跨模块大功能** → 模型先 announce `L3`，等你确认才进入 superpowers 全流程，不会静默起跳重型流程
 
-结构化数据（两源元信息、路由规则、重叠去重表）在 [`skills/registry.json`](skills/registry.json)。
+结构化数据（两源元信息、路由规则、重叠去重表、bias 原则）在 [`skills/registry.json`](skills/registry.json)。具体路由表见 SKILL.md 的 Step 2。
+
+## 安装
+
+三步配置完，之后 `choose-skill` 在每次工程请求前自动分档。命令标注了运行位置：**会话内**（在 Claude Code 会话输入）vs **终端**（在外部 shell 跑）。
+
+```bash
+# 1. superpowers —— 提供 L3 重型流程
+#    运行位置：会话内
+/plugin install superpowers@claude-plugins-official
+
+# 2. mattpocock —— 提供 L2 轻量技能（两种哲学，二选一）
+#    运行位置：终端
+claude plugins install mattpocock-skills     # 托管只读，自动更新
+# 或
+npx skills@latest add mattpocock/skills      # 拷贝可编辑，手动 npx skills update
+```
+
+```bash
+# 3. 路由层（本仓库核心）—— 把 SKILL.md 复制到你的 skills 目录
+#    运行位置：终端，在本仓库根目录下
+# macOS / Linux:
+mkdir -p ~/.claude/skills/choose-skill && cp skills/choose-skill/SKILL.md ~/.claude/skills/choose-skill/SKILL.md
+# Windows (PowerShell):
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\choose-skill" | Out-Null; Copy-Item "skills\choose-skill\SKILL.md" "$env:USERPROFILE\.claude\skills\choose-skill\SKILL.md"
+```
+
+两套都装会触发重叠——这恰好是 `choose-skill` 的价值所在：路由层已内建重叠区二选一规则（默认用 Matt 版本），无需手工剪裁。
 
 ## License
 
